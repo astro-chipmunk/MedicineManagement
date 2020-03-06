@@ -14,6 +14,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,6 +47,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import retrofit.Callback;
+import retrofit.Retrofit;
+
 public class SearchHospital extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -57,12 +62,19 @@ public class SearchHospital extends AppCompatActivity
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     Marker mCurrLocationMarker;
+    PlacesApiHelper mHelper;;
+    private SupportMapFragment mMapFragment;
+    private LatLng mCurrentLatLng;
+
+    Button mSearchButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_hospital);
-
+        mSearchButton = (Button) findViewById(R.id.search);
+        mSearchButton.setOnClickListener(mOnSearchButtonClickListener);
+        mHelper = new PlacesApiHelper(this);
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
 
@@ -340,5 +352,38 @@ public class SearchHospital extends AppCompatActivity
             // permissions this app might request
         }
     }
+
+    private View.OnClickListener mOnSearchButtonClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Log.d("病院", "onClick: ");
+            LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            // Places APIへリクエスト．5000は現在位置からの半径（m）
+            mHelper.requestPlaces("hospital", latLng, 5000, mResultCallback);
+        }
+    };
+
+    // レスポンスの処理
+    private Callback<Response> mResultCallback = new Callback<Response>() {
+        @Override
+        public void onResponse(retrofit.Response<Response> response, Retrofit retrofit) {
+            mGoogleMap.clear();
+            // レスポンスからResultのリストを取得
+            List<Result> results = response.body().getResults();
+            // Resultの数だけピンを立てる
+            for(Result r : results) {
+                com.koizumikarin.medimanage.Location location = r.getGeometry().getLocation();
+                LatLng latLng = new LatLng(location.getLat(), location.getLng());
+                String name = r.getName();
+                mGoogleMap.addMarker(new MarkerOptions().position(latLng).title(name));
+            }
+//            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCurrentLatLng, 15));
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+            t.printStackTrace();
+        }
+    };
 
 }

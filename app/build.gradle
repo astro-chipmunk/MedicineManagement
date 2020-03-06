@@ -42,6 +42,13 @@ dependencies {
     implementation 'com.google.api-client:google-api-client-android:1.23.0' exclude module: 'httpclient'
     implementation 'com.google.http-client:google-http-client-gson:1.23.0' exclude module: 'httpclient'
     implementation 'com.google.apis:google-api-services-vision:v1-rev369-1.23.0'
+    implementation "com.squareup.okhttp:okhttp:2.4.0"
+    implementation "com.squareup.okhttp:okhttp-urlconnection:2.4.0"
+
+    implementation "com.squareup.retrofit:retrofit:2.0.0-beta2"
+    implementation 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
+
+    implementation 'com.google.android.gms:play-services:8.1.0'
 }
 
 apply plugin: 'realm-android'
