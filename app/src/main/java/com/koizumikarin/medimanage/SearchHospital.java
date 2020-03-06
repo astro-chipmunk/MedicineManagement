@@ -78,117 +78,6 @@ public class SearchHospital extends AppCompatActivity
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
 
-//        (new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                double lat = mLastLocation.getLatitude();
-//                double lng = mLastLocation.getLongitude();
-//                StringBuilder urlStrBuilder = new StringBuilder("https://maps.googleapis.com/maps/api/place/search/json");
-//                urlStrBuilder.append("?location=" + lat + "," + lng);
-//                urlStrBuilder.append("&sensor=true&rankby=distance&types=convenience_store&key=YOUR_API_KEY");
-//                URL u = null;
-//                try {
-//                    u = new URL(urlStrBuilder.toString());
-//                } catch (MalformedURLException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                // APIを叩いてJSONをダウンロード
-//                HttpURLConnection con = null;
-//                try {
-//                    con = (HttpURLConnection) u.openConnection();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                try {
-//                    con.setRequestMethod("GET");
-//                } catch (ProtocolException e) {
-//                    e.printStackTrace();
-//                }
-//                try {
-//                    con.connect();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                BufferedInputStream inputStream = null;
-//                try {
-//                    inputStream = new BufferedInputStream(con.getInputStream());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                String path = Environment.getExternalStorageDirectory() + "/tekitou/";
-//                String fileName = "tekitou.json";
-//                File dir = new File(path);
-//                dir.mkdirs();
-//                File outputFile = new File(dir, fileName);
-//                FileOutputStream fos = null;
-//                try {
-//                    fos = new FileOutputStream(outputFile);
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                int bytesRead = -1;
-//                byte[] buffer = new byte[1024];
-//
-//                try {
-//                    while ((bytesRead = inputStream.read(buffer)) != -1) {
-//                        fos.write(buffer, 0, bytesRead);
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                try {
-//                    fos.flush();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                try {
-//                    fos.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                try {
-//                    inputStream.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            public void main(String[] args) throws IOException {
-//                FileInputStream fileInputStream;
-//                String path = Environment.getExternalStorageDirectory() + "/tekitou/";
-//                String fileName = "tekitou.json";
-//                File dir = new File(path);
-//                File inputFile = new File(dir, fileName);
-//                fileInputStream = new FileInputStream(inputFile);
-//                byte[] readBytes = new byte[fileInputStream.available()];
-//                fileInputStream.read(readBytes);
-//                String json = new String(readBytes);
-//
-//                // JSONのパース with Jackson
-//                ObjectMapper mapper = new ObjectMapper();
-//                Object root = mapper.readValue(json, Object.class);
-//                Map<?,?> rootMap = mapper.readValue(json, Map.class);
-//                ArrayList nextArray = (ArrayList)rootMap.get("results");
-//                ArrayList<String> strList = new ArrayList<String>();
-//
-//                for(int i =0; i < nextArray.size(); i++) {
-//                    Map<?, ?> thirdMap = (Map<?, ?>) nextArray.get(i);
-//                    Map<?, ?> forthMap = (Map<?, ?>) ((Map<?, ?>) thirdMap.get("geometry")).get("location");
-//                    Double lat = (Double) forthMap.get("lat");
-//                    Double lng = (Double) forthMap.get("lng");
-//                    String name = (String)thirdMap.get("name");
-//                    Log.i("json", "lat=" + lat + " lng=" + lng + " name=");
-//                }
-//            }
-//
-//
-//        }));
-
         }
 
     @Override
@@ -369,11 +258,9 @@ public class SearchHospital extends AppCompatActivity
             mGoogleMap.clear();
             // レスポンスからResultのリストを取得
             List<Result> results = response.body().getResults();
-            Log.d("??", "onClick: ");
             // Resultの数だけピンを立てる
 
             for(Result r : results) {
-                Log.d("病院", "onClick: ");
                 com.koizumikarin.medimanage.Location location = r.getGeometry().getLocation();
                 LatLng latLng = new LatLng(location.getLat(), location.getLng());
                 String name = r.getName();
