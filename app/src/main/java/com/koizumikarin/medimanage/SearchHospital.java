@@ -267,7 +267,7 @@ public class SearchHospital extends AppCompatActivity
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
-        markerOptions.title("Current Position");
+        markerOptions.title("現在地");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
 
@@ -356,7 +356,6 @@ public class SearchHospital extends AppCompatActivity
     private View.OnClickListener mOnSearchButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Log.d("病院", "onClick: ");
             LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             // Places APIへリクエスト．5000は現在位置からの半径（m）
             mHelper.requestPlaces("hospital", latLng, 5000, mResultCallback);
@@ -370,8 +369,11 @@ public class SearchHospital extends AppCompatActivity
             mGoogleMap.clear();
             // レスポンスからResultのリストを取得
             List<Result> results = response.body().getResults();
+            Log.d("??", "onClick: ");
             // Resultの数だけピンを立てる
+
             for(Result r : results) {
+                Log.d("病院", "onClick: ");
                 com.koizumikarin.medimanage.Location location = r.getGeometry().getLocation();
                 LatLng latLng = new LatLng(location.getLat(), location.getLng());
                 String name = r.getName();
