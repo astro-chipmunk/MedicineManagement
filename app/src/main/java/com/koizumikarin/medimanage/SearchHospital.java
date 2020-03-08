@@ -87,7 +87,6 @@ public class SearchHospital extends AppCompatActivity
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("", "onClick: ");
                 build_retrofit_and_get_response("hospital");
             }
         });
@@ -303,8 +302,6 @@ public class SearchHospital extends AppCompatActivity
     }
 
     private void build_retrofit_and_get_response(String type) {
-
-        Log.d("TAG", "build_retrofit_and_get_response: ");
 
         String url = "https://maps.googleapis.com/maps/";
 
