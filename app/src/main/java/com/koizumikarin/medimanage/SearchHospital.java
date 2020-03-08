@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -47,7 +48,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import retrofit.Call;
 import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
 import retrofit.Retrofit;
 
 public class SearchHospital extends AppCompatActivity
@@ -62,21 +66,31 @@ public class SearchHospital extends AppCompatActivity
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     Marker mCurrLocationMarker;
-    PlacesApiHelper mHelper;;
+//    PlacesApiHelper mHelper;;
     private SupportMapFragment mMapFragment;
     private LatLng mCurrentLatLng;
-
+    String latitude = "";
+    String longitude = "";
     Button mSearchButton;
+    int PROXIMITY_RADIUS = 10000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_hospital);
-        mSearchButton = (Button) findViewById(R.id.search);
-        mSearchButton.setOnClickListener(mOnSearchButtonClickListener);
-        mHelper = new PlacesApiHelper(this);
+        Button mSearchButton = (Button) findViewById(R.id.search);
+//        mSearchButton.setOnClickListener(mOnSearchButtonClickListener);
+//        mHelper = new PlacesApiHelper(this);
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
+
+        mSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("", "onClick: ");
+                build_retrofit_and_get_response("hospital");
+            }
+        });
 
         }
 
@@ -242,37 +256,104 @@ public class SearchHospital extends AppCompatActivity
         }
     }
 
-    private View.OnClickListener mOnSearchButtonClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            // Places APIへリクエスト．5000は現在位置からの半径（m）
-            mHelper.requestPlaces("hospital", latLng, 5000, mResultCallback);
-        }
-    };
+//    private View.OnClickListener mOnSearchButtonClickListener = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View view) {
+//            LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+//            // Places APIへリクエスト．5000は現在位置からの半径（m）
+//            mHelper.requestPlaces("hospital", latLng, 5000, mResultCallback);
+//        }
+//    };
+//
+//    // レスポンスの処理
+//    private Callback<Response> mResultCallback = new Callback<Response>() {
+//        @Override
+//        public void onResponse(retrofit.Response<Response> response, Retrofit retrofit) {
+//            mGoogleMap.clear();
+//            // レスポンスからResultのリストを取得
+//            List<Result> results = response.body().getResults();
+//            // Resultの数だけピンを立てる
+//
+//            for(Result r : results) {
+//                com.koizumikarin.medimanage.Location location = r.getGeometry().getLocation();
+//                LatLng latLng = new LatLng(location.getLat(), location.getLng());
+//                String name = r.getName();
+//                mGoogleMap.addMarker(new MarkerOptions().position(latLng).title(name));
+//            }
+////            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCurrentLatLng, 15));
+//        }
+//
+//        @Override
+//        public void onFailure(Throwable t) {
+//            t.printStackTrace();
+//        }
+//    };
 
-    // レスポンスの処理
-    private Callback<Response> mResultCallback = new Callback<Response>() {
-        @Override
-        public void onResponse(retrofit.Response<Response> response, Retrofit retrofit) {
-            mGoogleMap.clear();
-            // レスポンスからResultのリストを取得
-            List<Result> results = response.body().getResults();
-            // Resultの数だけピンを立てる
-
-            for(Result r : results) {
-                com.koizumikarin.medimanage.Location location = r.getGeometry().getLocation();
-                LatLng latLng = new LatLng(location.getLat(), location.getLng());
-                String name = r.getName();
-                mGoogleMap.addMarker(new MarkerOptions().position(latLng).title(name));
+    private boolean CheckGooglePlayServices() {
+        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+        int result = googleAPI.isGooglePlayServicesAvailable(this);
+        if(result != ConnectionResult.SUCCESS) {
+            if(googleAPI.isUserResolvableError(result)) {
+                googleAPI.getErrorDialog(this, result,
+                        0).show();
             }
-//            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCurrentLatLng, 15));
+            return false;
         }
+        return true;
+    }
 
-        @Override
-        public void onFailure(Throwable t) {
-            t.printStackTrace();
-        }
-    };
+    private void build_retrofit_and_get_response(String type) {
+
+        Log.d("TAG", "build_retrofit_and_get_response: ");
+
+        String url = "https://maps.googleapis.com/maps/";
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(url)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RetrofitMaps service = retrofit.create(RetrofitMaps.class);
+        Call<Example> call = service.getNearbyPlaces(type,latitude + "," + longitude, PROXIMITY_RADIUS);
+
+
+        call.enqueue(new Callback<Example>() {
+            @Override
+            public void onResponse(Response<Example> response, Retrofit retrofit) {
+
+                try {
+                    mGoogleMap.clear();
+                    // This loop will go through all the results and add marker on each location.
+                    for (int i = 0; i < response.body().getResults().size(); i++) {
+                        Double lat = response.body().getResults().get(i).getGeometry().getLocation().getLat();
+                        Double lng = response.body().getResults().get(i).getGeometry().getLocation().getLng();
+                        String placeName = response.body().getResults().get(i).getName();
+                        String vicinity = response.body().getResults().get(i).getVicinity();
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        LatLng latLng = new LatLng(lat, lng);
+                        // Position of Marker on Map
+                        markerOptions.position(latLng);
+                        // Adding Title to the Marker
+                        markerOptions.title(placeName + " : " + vicinity);
+                        // Adding Marker to the Camera.
+                        Marker m = mGoogleMap.addMarker(markerOptions);
+                        // Adding colour to the marker
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        // move map camera
+                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                        mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+                    }
+                } catch (Exception e) {
+                    Log.d("onResponse", "There is an error");
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("onFailure", t.toString());
+            }
+        });
+    }
+
 
 }
