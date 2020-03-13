@@ -69,8 +69,8 @@ public class SearchHospital extends AppCompatActivity
 //    PlacesApiHelper mHelper;;
     private SupportMapFragment mMapFragment;
     private LatLng mCurrentLatLng;
-    String latitude = "";
-    String longitude = "";
+//    String latitude = ;
+//    String longitude = "";
     Button mSearchButton;
     int PROXIMITY_RADIUS = 10000;
 
@@ -164,7 +164,6 @@ public class SearchHospital extends AppCompatActivity
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
-
         //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
@@ -175,7 +174,7 @@ public class SearchHospital extends AppCompatActivity
 
         //move map camera
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+        mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
         //stop location updates
         if (mGoogleApiClient != null) {
@@ -303,6 +302,9 @@ public class SearchHospital extends AppCompatActivity
 
     private void build_retrofit_and_get_response(String type) {
 
+        int latitude = (int) (mLastLocation.getLatitude() * 1e6);
+        int longitude = (int) (mLastLocation.getLongitude() * 1e6);
+
         String url = "https://maps.googleapis.com/maps/";
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -319,7 +321,7 @@ public class SearchHospital extends AppCompatActivity
             public void onResponse(Response<Example> response, Retrofit retrofit) {
 
                 try {
-                    mGoogleMap.clear();
+//                    mGoogleMap.clear();
                     // This loop will go through all the results and add marker on each location.
                     for (int i = 0; i < response.body().getResults().size(); i++) {
                         Double lat = response.body().getResults().get(i).getGeometry().getLocation().getLat();
@@ -350,7 +352,5 @@ public class SearchHospital extends AppCompatActivity
                 Log.d("onFailure", t.toString());
             }
         });
+        }
     }
-
-
-}
