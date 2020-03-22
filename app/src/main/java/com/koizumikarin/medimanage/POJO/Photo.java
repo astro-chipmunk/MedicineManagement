@@ -1,4 +1,4 @@
-package com.koizumikarin.medimanage;
+package com.koizumikarin.medimanage.POJO;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

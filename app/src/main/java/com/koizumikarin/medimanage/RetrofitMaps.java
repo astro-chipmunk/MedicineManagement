@@ -1,5 +1,7 @@
 package com.koizumikarin.medimanage;
 
+import com.koizumikarin.medimanage.POJO.Example;
+
 import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Query;
