@@ -124,7 +124,7 @@ public class SearchHospital extends FragmentActivity implements OnMapReadyCallba
         });
     }
 
-    private void build_retrofit_and_get_response(String type) {
+    private void build_retrofit_and_get_response(final String type) {
 
         String url = "https://maps.googleapis.com/maps/";
 
@@ -144,6 +144,7 @@ public class SearchHospital extends FragmentActivity implements OnMapReadyCallba
                     mMap.clear();
                     // This loop will go through all the results and add marker on each location.
                     for (int i = 0; i < response.body().getResults().size(); i++) {
+                        Log.d("onResponse", String.format("latitude:%.3f longitude:%.3f", latitude, longitude, type));
                         Double lat = response.body().getResults().get(i).getGeometry().getLocation().getLat();
                         Double lng = response.body().getResults().get(i).getGeometry().getLocation().getLng();
                         String placeName = response.body().getResults().get(i).getName();
