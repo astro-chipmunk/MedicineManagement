@@ -114,14 +114,6 @@ public class SearchHospital extends FragmentActivity implements OnMapReadyCallba
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
-
-        Button btnHospital = (Button) findViewById(R.id.search);
-        btnHospital.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                build_retrofit_and_get_response("zoo");
-            }
-        });
     }
 
     private void build_retrofit_and_get_response(final String type) {
@@ -141,10 +133,9 @@ public class SearchHospital extends FragmentActivity implements OnMapReadyCallba
             @Override
             public void onResponse(Response<Example> response, Retrofit retrofit) {
                 try {
-                    mMap.clear();
+//                    mMap.clear();
                     // This loop will go through all the results and add marker on each location.
                     for (int i = 0; i < response.body().getResults().size(); i++) {
-                        Log.d("retrofit", "onResponse: ");
                         Double lat = response.body().getResults().get(i).getGeometry().getLocation().getLat();
                         Double lng = response.body().getResults().get(i).getGeometry().getLocation().getLng();
                         String placeName = response.body().getResults().get(i).getName();
@@ -158,10 +149,10 @@ public class SearchHospital extends FragmentActivity implements OnMapReadyCallba
                         // Adding Marker to the Camera.
                         Marker m = mMap.addMarker(markerOptions);
                         // Adding colour to the marker
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
                         // move map camera
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+//                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+//                        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
                     }
                 } catch (Exception e) {
                     Log.d("onResponse", "There is an error");
@@ -206,14 +197,14 @@ public class SearchHospital extends FragmentActivity implements OnMapReadyCallba
 
     @Override
     public void onLocationChanged(Location location) {
-
-        Log.d("onLocationChanged", "entered");
-
         mLastLocation = location;
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
         //Place current location marker
+
+        build_retrofit_and_get_response("hospital");
+
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -222,18 +213,17 @@ public class SearchHospital extends FragmentActivity implements OnMapReadyCallba
         markerOptions.title("現在地");
 
         // Adding colour to the marker
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
 
         // Adding Marker to the Map
         mCurrLocationMarker = mMap.addMarker(markerOptions);
+//
+//        for (int I = 0 ;;){
+//            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+//            mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
+//        }
 
         //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-
-        Log.d("onLocationChanged", String.format("latitude:%.3f longitude:%.3f", latitude, longitude));
-
-        Log.d("onLocationChanged", "Exit");
     }
 
     @Override
