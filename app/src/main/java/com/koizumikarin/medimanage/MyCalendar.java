@@ -186,7 +186,6 @@ public class MyCalendar extends AppCompatActivity
                         MedicineCalendar medicineCalendar = realm.createObject(MedicineCalendar.class);
                         medicineCalendar.setEvent(editText.getText().toString());
                         medicineCalendar.setPosition(mCalendarAdapter.getItem(position).toString());
-                        Log.d("入ってる？", "onClick: ");
                         realm.commitTransaction();
                     }
                 })

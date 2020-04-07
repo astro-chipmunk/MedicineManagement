@@ -49,7 +49,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyARFjZEcY-IJ0J0wbFPZ4LdPfG0AHs-Zk4" />
+            android:value="@string/google_maps_key" />
 
         <!--<meta-data android:name="android.app.shortcuts"-->
             <!--android:resource="@xml/shortcuts" />-->

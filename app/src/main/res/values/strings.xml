@@ -31,7 +31,6 @@
     <string name="image_preview_header">Preview:</string>
     <string name="loading_message">読み込み中です。しばらくお待ちください。</string>
     <string name="places_api_url">https://maps.googleapis.com</string>
-    <string name="google_maps_key_browser">AIzaSyARFjZEcY-IJ0J0wbFPZ4LdPfG0AHs-Zk4</string>
 
     <string-array name="Spinner">
         <item>赤</item>

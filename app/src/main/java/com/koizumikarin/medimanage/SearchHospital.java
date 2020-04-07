@@ -119,7 +119,7 @@ public class SearchHospital extends FragmentActivity implements OnMapReadyCallba
         btnHospital.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                build_retrofit_and_get_response("hospital");
+                build_retrofit_and_get_response("zoo");
             }
         });
     }
@@ -144,6 +144,7 @@ public class SearchHospital extends FragmentActivity implements OnMapReadyCallba
                     mMap.clear();
                     // This loop will go through all the results and add marker on each location.
                     for (int i = 0; i < response.body().getResults().size(); i++) {
+                        Log.d("retrofit", "onResponse: ");
                         Double lat = response.body().getResults().get(i).getGeometry().getLocation().getLat();
                         Double lng = response.body().getResults().get(i).getGeometry().getLocation().getLng();
                         String placeName = response.body().getResults().get(i).getName();

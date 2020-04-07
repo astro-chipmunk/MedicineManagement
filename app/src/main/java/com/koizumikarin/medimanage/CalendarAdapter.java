@@ -78,7 +78,6 @@ public class CalendarAdapter extends BaseAdapter implements ListAdapter {
         if( medicineCalendar != null){
             holder.eventText.setText(medicineCalendar.getEvent());
             medicineCalendar.getPosition(dateArray.get(position));
-            Log.d("出てる？", "onClick: ");
         }
 
 //        medicineCalendar.setPosition(mCalendarAdapter.getItem(position).toString());
